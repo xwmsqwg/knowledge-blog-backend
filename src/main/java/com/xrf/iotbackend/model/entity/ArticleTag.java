@@ -1,4 +1,4 @@
-package com.xrf.iotbackend.model;
+package com.xrf.iotbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;

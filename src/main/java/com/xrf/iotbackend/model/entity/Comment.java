@@ -1,4 +1,4 @@
-package com.xrf.iotbackend.model;
+package com.xrf.iotbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -13,19 +13,15 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("articles")
-public class Article {
+@TableName("comments")
+public class Comment {
 
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private String title;
-    private String content;
-    private String coverUrl;
-    private Integer categoryId;
+    private Integer articleId;
     private Integer authorId;
+    private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 
 }
