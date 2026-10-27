@@ -12,6 +12,7 @@ public enum ErrorCode {
     UNAUTHORIZED(40100, "未登录或 Token 无效" , HttpStatus.UNAUTHORIZED),
     FORBIDDEN(40300, "无权限操作" , HttpStatus.FORBIDDEN),
     NOT_FOUND(40400, "资源不存在" , HttpStatus.NOT_FOUND),
+    METHOD_NOT_ALLOWED(40500, "请求方法不支持", HttpStatus.METHOD_NOT_ALLOWED),
     CONFLICT(40900, "资源冲突" , HttpStatus.CONFLICT),
     INTERNAL_ERROR(50000, "服务器内部错误" , HttpStatus.INTERNAL_SERVER_ERROR);
 

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,8 +50,14 @@ public class GlobalExceptionHandler {
 
     //处理请求体错误异常
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Result> handleUnreadableMessage(HttpMessageNotReadableException exception) {
+    public ResponseEntity<Result> handleUnreadableMessage() {
         return response(ErrorCode.VALIDATION_ERROR, "请求 JSON 格式错误");
+    }
+
+    //请求方法错误异常
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<Result> handleMethodNotSupported(){
+        return response(ErrorCode.METHOD_NOT_ALLOWED , "请求方式错误");
     }
 
     //兜底异常处理
