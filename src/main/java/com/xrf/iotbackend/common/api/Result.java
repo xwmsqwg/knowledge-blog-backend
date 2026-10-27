@@ -14,19 +14,39 @@ public class Result {
     private Long timestamp;
 
     public static Result success() {
-        return new Result(0, "success", null, System.currentTimeMillis());
+        return new Result(
+                ErrorCode.SUCCESS.getCode(),
+                ErrorCode.SUCCESS.getMessage(),
+                null,
+                System.currentTimeMillis()
+        );
     }
 
     public static Result success(Object data) {
-        return new Result(0, "success", data, System.currentTimeMillis());
+        return new Result(
+                ErrorCode.SUCCESS.getCode(),
+                ErrorCode.SUCCESS.getMessage(),
+                data,
+                System.currentTimeMillis()
+        );
     }
 
     public static Result successMessage(String message) {
-        return new Result(0, message, null, System.currentTimeMillis());
+        return new Result(
+                ErrorCode.SUCCESS.getCode(),
+                message,
+                null,
+                System.currentTimeMillis()
+        );
     }
 
     public static Result success(String message, Object data) {
-        return new Result(0, message, data, System.currentTimeMillis());
+        return new Result(
+                ErrorCode.SUCCESS.getCode(),
+                message,
+                data,
+                System.currentTimeMillis()
+        );
     }
 
     public static Result error(int code, String message) {
