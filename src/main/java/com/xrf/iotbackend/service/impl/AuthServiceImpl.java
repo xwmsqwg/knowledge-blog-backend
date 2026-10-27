@@ -1,13 +1,16 @@
-package com.xrf.iotbackend.service.Impl;
+package com.xrf.iotbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xrf.iotbackend.common.api.ErrorCode;
 import com.xrf.iotbackend.exception.BusinessException;
+import com.xrf.iotbackend.model.dto.LoginRequest;
 import com.xrf.iotbackend.model.dto.RegisterRequest;
 import com.xrf.iotbackend.model.entity.User;
+import com.xrf.iotbackend.model.vo.LoginVO;
 import com.xrf.iotbackend.model.vo.UserVO;
 import com.xrf.iotbackend.repository.UserRepository;
 import com.xrf.iotbackend.service.AuthService;
+import com.xrf.iotbackend.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -24,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Override
     @Transactional
@@ -68,4 +75,33 @@ public class AuthServiceImpl implements AuthService {
                 user.getCreateTime()
         );
     }
+
+    @Override
+    public LoginVO login(LoginRequest loginRequest) {
+        String username = loginRequest.getUsername().trim();
+        User existUser = userRepository.selectOne(
+                Wrappers.<User>lambdaQuery().eq(User::getUsername , username));
+        if(existUser == null){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED , "用户名或密码错误");
+        }
+        boolean isMatch = passwordEncoder.matches(
+                loginRequest.getPassword(),
+                existUser.getPasswordHash()
+        );
+        if(!isMatch){
+            throw new BusinessException(ErrorCode.UNAUTHORIZED , "用户名或密码错误");
+        }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", existUser.getId());
+        claims.put("username", existUser.getUsername());
+        String token = jwtUtils.generateJwt(claims);
+        UserVO userVO = new UserVO(
+                existUser.getId(),
+                existUser.getUsername(),
+                existUser.getEmail(),
+                existUser.getCreateTime()
+        );
+        return new LoginVO(token , userVO);
+    }
+
 }
