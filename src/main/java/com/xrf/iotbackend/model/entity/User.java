@@ -20,7 +20,6 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String username;
-    @TableField("password_hash")
     private String passwordHash;
     private String email;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

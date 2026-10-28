@@ -20,7 +20,6 @@ public class Category {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String name;
-    @TableField("creator_id")
     private Integer creatorId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
