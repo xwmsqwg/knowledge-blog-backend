@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xrf.iotbackend.repository.CategoryRepository">
     <select id="selectAllCategories" resultType="com.xrf.iotbackend.model.vo.CategoryVO">
-        select c.id , c.name , count(a.id) as article_count , c.creator_id , c.create_time
+        select c.id, c.name, count(a.id) as article_count, c.creator_id, c.create_time
         from categories c
-        left join articles a on a.category_id = c.id
+                 left join articles a on a.category_id = c.id
         group by c.id, c.name, c.creator_id, c.create_time
         order by c.create_time asc, c.id asc
     </select>
