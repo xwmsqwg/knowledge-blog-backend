@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xrf.iotbackend.repository.TagRepository">
+    <select id="selectAllTags" resultType="com.xrf.iotbackend.model.vo.TagVO">
+        select t.id, t.name, count(a.tag_id) article_count
+        from tags t
+                 left join article_tags a on a.tag_id = t.id
+        group by t.name, t.id
+        order by t.id asc
+    </select>
+</mapper>
