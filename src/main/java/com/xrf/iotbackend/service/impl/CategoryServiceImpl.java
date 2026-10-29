@@ -29,14 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryVO createCategory(String name, Integer creatorId) {
-        String returnName = name == null ? null : name.trim();
-        if (returnName == null || returnName.isEmpty() || returnName.length() > 50) {
-            throw new BusinessException(
-                    ErrorCode.VALIDATION_ERROR,
-                    "分类名称长度必须在1到50个字符之间"
-            );
-        }
-
+        String returnName = name.trim();
         long count = categoryRepository.selectCount(
                 Wrappers.<Category>lambdaQuery().eq(Category::getName, returnName)
         );
