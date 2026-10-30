@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xrf.iotbackend.repository.ArticleTagRepository">
+
+    <select id="selectTagsByArticleId" resultType="com.xrf.iotbackend.model.vo.TagSimpleVO">
+        select t.id, t.name
+        from article_tags at
+                 join tags t on t.id = at.tag_id
+        where at.article_id = #{articleId}
+        order by t.id
+    </select>
+
+</mapper>

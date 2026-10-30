@@ -85,6 +85,18 @@ public class ArticleServiceImpl implements ArticleService {
         );
     }
 
+    @Override
+    public ArticlePageVO pageArticles(Integer page, Integer size, Integer categoryId, Integer tagId, String sort) {
+        boolean isAsc = "asc".equalsIgnoreCase(sort);
+        long nextData = (long)(page - 1) * size;
+        long total = articleRepository.countArticlePage(categoryId, tagId);
+        List<ArticleListVO> records = articleRepository.selectArticlePage(categoryId , tagId , nextData , size , isAsc);
+        for(ArticleListVO record : records){
+            record.setTags(articleTagRepository.selectTagsByArticleId(record.getId()));
+        }
+        return new ArticlePageVO(records , total , page, size);
+    }
+
     private List<TagSimpleVO> saveTags(Integer articleId, List<String> rawTagNames){
         List<TagSimpleVO> tags = new ArrayList<>();
         if(rawTagNames == null || rawTagNames.isEmpty()){
