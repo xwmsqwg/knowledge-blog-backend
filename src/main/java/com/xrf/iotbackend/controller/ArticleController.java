@@ -2,6 +2,7 @@ package com.xrf.iotbackend.controller;
 
 import com.xrf.iotbackend.common.api.Result;
 import com.xrf.iotbackend.model.dto.ArticleCreateRequest;
+import com.xrf.iotbackend.model.dto.ArticleUpdateRequest;
 import com.xrf.iotbackend.model.vo.ArticleVO;
 import com.xrf.iotbackend.service.ArticleService;
 import jakarta.validation.Valid;
@@ -10,6 +11,8 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -45,6 +48,17 @@ public class ArticleController {
     @GetMapping("/{id}")
     public Result getArticle(@PathVariable("id") Integer articleId){
         return Result.success(articleService.getArticle(articleId));
+    }
+
+    //更新文章
+    @PutMapping("/{id}")
+    public Result updateArticle(
+            @PathVariable("id") Integer articleId,
+            @Valid @RequestBody ArticleUpdateRequest articleUpdateRequest,
+            @RequestAttribute("currentUserId") Integer authorId
+            ){
+        ArticleVO articleVO = articleService.updateArticle(articleId , articleUpdateRequest , authorId);
+        return Result.success(articleVO);
     }
 
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xrf.iotbackend.common.api.ErrorCode;
 import com.xrf.iotbackend.exception.BusinessException;
 import com.xrf.iotbackend.model.dto.ArticleCreateRequest;
+import com.xrf.iotbackend.model.dto.ArticleUpdateRequest;
 import com.xrf.iotbackend.model.entity.*;
 import com.xrf.iotbackend.model.vo.*;
 import com.xrf.iotbackend.repository.*;
@@ -108,6 +109,41 @@ public class ArticleServiceImpl implements ArticleService {
         }
         articleVO.setTags(articleTagRepository.selectTagsByArticleId(articleId));
         return articleVO;
+    }
+
+    @Override
+    @Transactional
+    public ArticleVO updateArticle(Integer articleId, ArticleUpdateRequest articleUpdateRequest, Integer authorId) {
+        Article existArticle = articleRepository.selectById(articleId);
+        if(existArticle == null){
+            throw new BusinessException(
+                    ErrorCode.NOT_FOUND,
+                    "文章不存在"
+            );
+        }
+        if(!(existArticle.getAuthorId().equals(authorId))){
+            throw new BusinessException(
+                    ErrorCode.FORBIDDEN,
+                    "越权操作!"
+            );
+        }
+        Category category = categoryRepository.selectById(articleUpdateRequest.getCategoryId());
+        if(category == null){
+            throw new BusinessException(
+                    ErrorCode.NOT_FOUND,
+                    "分类不存在"
+            );
+        }
+        articleRepository.updateArticle(articleId , articleUpdateRequest.getTitle().trim() , articleUpdateRequest.getContent().trim() , category.getId());
+        if(articleUpdateRequest.getTags() != null)
+        {
+            articleTagRepository.delete(
+                    Wrappers.<ArticleTag>lambdaQuery()
+                            .eq(ArticleTag::getArticleId , articleId)
+            );
+            saveTags(articleId , articleUpdateRequest.getTags());
+        }
+        return getArticle(articleId);
     }
 
     private List<TagSimpleVO> saveTags(Integer articleId, List<String> rawTagNames){

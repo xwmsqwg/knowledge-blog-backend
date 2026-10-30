@@ -1,8 +1,11 @@
 package com.xrf.iotbackend.service;
 
 import com.xrf.iotbackend.model.dto.ArticleCreateRequest;
+import com.xrf.iotbackend.model.dto.ArticleUpdateRequest;
 import com.xrf.iotbackend.model.vo.ArticlePageVO;
 import com.xrf.iotbackend.model.vo.ArticleVO;
+
+import java.util.List;
 
 public interface ArticleService {
 
@@ -13,6 +16,10 @@ public interface ArticleService {
                                Integer categoryId,
                                Integer tagId,
                                String sort);
+
     ArticleVO getArticle(Integer articleId);
 
+    ArticleVO updateArticle(Integer articleId ,
+                       ArticleUpdateRequest articleUpdateRequest,
+                       Integer authorId);
 }
