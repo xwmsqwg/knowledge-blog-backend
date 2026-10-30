@@ -13,5 +13,6 @@ public interface ArticleService {
                                Integer categoryId,
                                Integer tagId,
                                String sort);
+    ArticleVO getArticle(Integer articleId);
 
 }

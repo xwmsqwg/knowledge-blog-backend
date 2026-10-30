@@ -4,12 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xrf.iotbackend.repository.ArticleRepository">
 
+<!--    文章分页查询-->
     <resultMap id="articleListItem" type="com.xrf.iotbackend.model.vo.ArticleListVO">
-        <id property="id" column="id"/>
-        <result property="title" column="title"/>
-        <result property="coverUrl" column="cover_url"/>
-        <result property="createTime" column="create_time"/>
-        <result property="commentCount" column="comment_count"/>
+        <id property="id" column="article_id"/>
+        <result property="title" column="article_title"/>
+        <result property="coverUrl" column="article_cover_url"/>
+        <result property="createTime" column="article_create_time"/>
+        <result property="commentCount" column="article_comment_count"/>
 
         <association property="author" javaType="com.xrf.iotbackend.model.vo.AuthorVO">
             <id property="id" column="author_id"/>
@@ -20,6 +21,37 @@
             <id property="id" column="category_id"/>
             <result property="name" column="category_name"/>
         </association>
+    </resultMap>
+
+<!--    文章详情查询-->
+    <resultMap id="articleDetail" type="com.xrf.iotbackend.model.vo.ArticleVO">
+        <id property="id" column="article_id"/>
+        <result property="title" column="article_title"/>
+        <result property="content" column="article_content"/>
+        <result property="coverUrl" column="article_cover_url"/>
+        <result property="createTime" column="article_create_time"/>
+        <result property="updateTime" column="article_update_time"/>
+
+        <association property="author" javaType="com.xrf.iotbackend.model.vo.AuthorVO">
+            <id property="id" column="author_id"/>
+            <result property="username" column="author_username"/>
+        </association>
+
+        <association property="category" javaType="com.xrf.iotbackend.model.vo.CategorySimpleVO">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+        </association>
+
+        <collection property="comments" ofType="com.xrf.iotbackend.model.vo.CommentVO">
+            <id property="id" column="comment_id"/>
+            <result property="articleId" column="comment_article_id"/>
+            <result property="content" column="comment_content"/>
+            <result property="createTime" column="comment_create_time"/>
+            <association property="author" javaType="com.xrf.iotbackend.model.vo.AuthorVO">
+                <id property="id" column="comment_author_id"/>
+                <result property="username" column="comment_author_username"/>
+            </association>
+        </collection>
     </resultMap>
 
     <select id="countArticlePage" resultType="long">
@@ -38,11 +70,19 @@
     </select>
 
     <select id="selectArticlePage" resultMap="articleListItem">
-        select a.id , a.title , a.cover_url , a.create_time , u.id as author_id , u.username as author_username , c.id
-        as category_id ,
-        c.name as category_name , (select count(*) from comments where comments.article_id = a.id) as comment_count from
-        articles a join
-        users u on u.id = a.author_id join categories c on a.category_id = c.id
+        select
+        a.id as article_id ,
+        a.title as article_title ,
+        a.cover_url as article_cover_url ,
+        a.create_time as article_create_time ,
+        u.id as author_id ,
+        u.username as author_username ,
+        c.id as category_id ,
+        c.name as category_name ,
+        (select count(*) from comments where comments.article_id = a.id) as article_comment_count
+        from articles a
+        join users u on u.id = a.author_id
+        join categories c on a.category_id = c.id
         <if test="tagId != null">
             join article_tags at on a.id = at.article_id
         </if>
@@ -65,6 +105,37 @@
             <otherwise>desc</otherwise>
         </choose>
         limit #{nextData}, #{size}
+    </select>
+
+    <select id="selectByArticleId" resultMap="articleDetail">
+        select
+        a.id as article_id ,
+        a.title as article_title ,
+        a.content as article_content ,
+        a.cover_url as article_cover_url ,
+        a.create_time as article_create_time ,
+        a.update_time as article_update_time ,
+        u.id as author_id ,
+        u.username as author_username ,
+        c.id as category_id ,
+        c.name as category_name ,
+        com.id as comment_id ,
+        com.article_id as comment_article_id ,
+        com.content as comment_content ,
+        com.author_id as comment_author_id ,
+        com_u.username as comment_author_username,
+        com.create_time as comment_create_time
+        from articles a
+        join users u on u.id = a.author_id
+        join categories c on a.category_id = c.id
+        left join comments com on a.id = com.article_id
+        left join users com_u on com_u.id = com.author_id
+        <where>
+            <if test="articleId != null">
+                and a.id = #{articleId}
+            </if>
+        </where>
+        order by com.create_time
     </select>
 
 </mapper>

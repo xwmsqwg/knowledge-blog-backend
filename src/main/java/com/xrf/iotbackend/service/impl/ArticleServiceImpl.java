@@ -97,6 +97,19 @@ public class ArticleServiceImpl implements ArticleService {
         return new ArticlePageVO(records , total , page, size);
     }
 
+    @Override
+    public ArticleVO getArticle(Integer articleId) {
+        ArticleVO articleVO = articleRepository.selectByArticleId(articleId);
+        if(articleVO == null){
+            throw new BusinessException(
+                    ErrorCode.NOT_FOUND,
+                    "文章不存在"
+            );
+        }
+        articleVO.setTags(articleTagRepository.selectTagsByArticleId(articleId));
+        return articleVO;
+    }
+
     private List<TagSimpleVO> saveTags(Integer articleId, List<String> rawTagNames){
         List<TagSimpleVO> tags = new ArrayList<>();
         if(rawTagNames == null || rawTagNames.isEmpty()){

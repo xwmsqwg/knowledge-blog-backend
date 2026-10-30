@@ -15,7 +15,7 @@ public class CommentVO {
     private Integer id;
     private Integer articleId;
     private String content;
-    private AuthorVO commentAuthor;
+    private AuthorVO author;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 

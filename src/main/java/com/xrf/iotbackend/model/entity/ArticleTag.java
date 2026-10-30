@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @TableName("article_tags")
 public class ArticleTag {
 
-    // 联合主键使用自定义 SQL 或 QueryWrapper 操作，不能使用 updateById/deleteById。
     private Integer articleId;
     private Integer tagId;
 

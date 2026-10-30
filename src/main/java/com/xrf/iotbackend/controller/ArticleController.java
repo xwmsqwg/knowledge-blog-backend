@@ -41,4 +41,10 @@ public class ArticleController {
         return Result.success(articleService.pageArticles(page , size , category , tag , sort));
     }
 
+    //查询文章详情
+    @GetMapping("/{id}")
+    public Result getArticle(@PathVariable("id") Integer articleId){
+        return Result.success(articleService.getArticle(articleId));
+    }
+
 }
