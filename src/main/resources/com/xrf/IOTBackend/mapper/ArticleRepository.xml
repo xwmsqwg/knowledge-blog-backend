@@ -142,13 +142,13 @@
         update articles a
         <set>
             <if test="title != null">
-                title = #{title}
+                title = #{title},
             </if>
             <if test="content != null">
-                content = #{content}
+                content = #{content},
             </if>
             <if test="categoryId != null">
-                category_id = #{categoryId}
+                category_id = #{categoryId},
             </if>
             update_time = now()
         </set>
