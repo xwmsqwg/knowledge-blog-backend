@@ -61,4 +61,13 @@ public class ArticleController {
         return Result.success(articleVO);
     }
 
+    //删除文章
+    @DeleteMapping("/{id}")
+    public Result deleteArticle(
+            @PathVariable("id") Integer articleId,
+            @RequestAttribute("currentUserId") Integer authorId
+    ){
+        articleService.deleteArticle(articleId , authorId);
+        return Result.successMessage("文章删除成功");
+    }
 }

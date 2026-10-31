@@ -5,8 +5,6 @@ import com.xrf.iotbackend.model.dto.ArticleUpdateRequest;
 import com.xrf.iotbackend.model.vo.ArticlePageVO;
 import com.xrf.iotbackend.model.vo.ArticleVO;
 
-import java.util.List;
-
 public interface ArticleService {
 
     ArticleVO createArticle(ArticleCreateRequest articleCreateRequest , Integer creatorId);
@@ -22,4 +20,6 @@ public interface ArticleService {
     ArticleVO updateArticle(Integer articleId ,
                        ArticleUpdateRequest articleUpdateRequest,
                        Integer authorId);
+
+    void deleteArticle(Integer articleId , Integer authorId);
 }

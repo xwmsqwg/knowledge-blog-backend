@@ -146,6 +146,25 @@ public class ArticleServiceImpl implements ArticleService {
         return getArticle(articleId);
     }
 
+    @Override
+    @Transactional
+    public void deleteArticle(Integer articleId, Integer authorId) {
+        Article existArticle = articleRepository.selectById(articleId);
+        if(existArticle == null){
+            throw new BusinessException(
+                    ErrorCode.NOT_FOUND,
+                    "文章不存在"
+            );
+        }
+        if(!(existArticle.getAuthorId().equals(authorId))){
+            throw new BusinessException(
+                    ErrorCode.FORBIDDEN,
+                    "越权操作!"
+            );
+        }
+        articleRepository.deleteById(articleId);
+    }
+
     private List<TagSimpleVO> saveTags(Integer articleId, List<String> rawTagNames){
         List<TagSimpleVO> tags = new ArrayList<>();
         if(rawTagNames == null || rawTagNames.isEmpty()){
