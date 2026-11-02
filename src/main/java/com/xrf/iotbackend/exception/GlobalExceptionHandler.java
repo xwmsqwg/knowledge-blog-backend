@@ -11,6 +11,8 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -58,6 +60,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Result> handleMethodNotSupported(){
         return response(ErrorCode.METHOD_NOT_ALLOWED , "请求方式错误");
+    }
+
+    //处理请求参数异常
+    @ExceptionHandler({
+            HandlerMethodValidationException.class,
+            MethodArgumentTypeMismatchException.class
+    })
+    public ResponseEntity<Result> handleRequestParameterError(Exception exception) {
+        return response(ErrorCode.VALIDATION_ERROR, "请求参数错误");
     }
 
     //兜底异常处理
