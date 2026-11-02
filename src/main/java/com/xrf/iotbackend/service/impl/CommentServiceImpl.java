@@ -57,4 +57,23 @@ public class CommentServiceImpl implements CommentService {
                 comment.getCreateTime()
         );
     }
+
+    @Override
+    public void deleteComment(Integer commentId, Integer currentAuthor) {
+        Comment comment = commentRepository.selectById(commentId);
+        if(comment == null){
+            throw new BusinessException(
+                    ErrorCode.NOT_FOUND,
+                    "该评论不存在"
+            );
+        }
+        Article article = articleRepository.selectById(comment.getArticleId());
+        if(!comment.getAuthorId().equals(currentAuthor) && !article.getAuthorId().equals(currentAuthor)){
+            throw new BusinessException(
+                    ErrorCode.FORBIDDEN,
+                    "越权操作"
+            );
+        }
+        commentRepository.deleteById(commentId);
+    }
 }

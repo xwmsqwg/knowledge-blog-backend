@@ -7,4 +7,6 @@ public interface CommentService {
 
     CommentVO createComment(CommentCreateRequest commentCreateRequest , Integer authorId);
 
+    void deleteComment(Integer commentId , Integer currentAuthor);
+
 }
