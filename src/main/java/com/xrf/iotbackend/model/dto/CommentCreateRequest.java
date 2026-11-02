@@ -1,5 +1,6 @@
 package com.xrf.iotbackend.model.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -8,11 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Schema(description = "发表评论请求")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentCreateRequest {
 
+    @Schema(description = "文章 ID", example = "1")
     @Positive
     @NotNull
     private Integer articleId;

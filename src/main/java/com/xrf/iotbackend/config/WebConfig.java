@@ -19,7 +19,11 @@ public class WebConfig implements WebMvcConfigurer {
                 excludePathPatterns(
                         "/api/v1/auth/register",
                         "/api/v1/auth/login",
-                        "/health"
+                        "/health",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**",
+                        "/v3/api-docs",
+                        "/v3/api-docs/**"
                 );
     }
 }

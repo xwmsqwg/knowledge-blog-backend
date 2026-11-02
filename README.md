@@ -160,4 +160,4 @@ SHOW TABLES;
 
 ## 6. API 文档
 
-待补充
+- Swagger UI：<http://localhost:8080/swagger-ui.html>
