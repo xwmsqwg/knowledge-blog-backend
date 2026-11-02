@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: IOTBackend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/knowledge_blog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+
+mybatis-plus:
+  mapper-locations: classpath*:/com/xrf/IOTBackend/mapper/**/*.xml
+  type-aliases-package: com.xrf.iotbackend.model.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 604800000
