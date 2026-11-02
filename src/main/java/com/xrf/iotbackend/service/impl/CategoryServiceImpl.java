@@ -3,8 +3,10 @@ package com.xrf.iotbackend.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.xrf.iotbackend.common.api.ErrorCode;
 import com.xrf.iotbackend.exception.BusinessException;
+import com.xrf.iotbackend.model.entity.Article;
 import com.xrf.iotbackend.model.entity.Category;
 import com.xrf.iotbackend.model.vo.CategoryVO;
+import com.xrf.iotbackend.repository.ArticleRepository;
 import com.xrf.iotbackend.repository.CategoryRepository;
 import com.xrf.iotbackend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ArticleRepository articleRepository;
 
     @Override
     public List<CategoryVO> getAllCategories() {
@@ -67,6 +71,16 @@ public class CategoryServiceImpl implements CategoryService {
             throw new  BusinessException(
                     ErrorCode.NOT_FOUND,
                     "分类不存在"
+            );
+        }
+        long articleCount = articleRepository.selectCount(
+                Wrappers.<Article>lambdaQuery()
+                        .eq(Article::getCategoryId , categoryId)
+        );
+        if(articleCount > 0){
+            throw new BusinessException(
+                    ErrorCode.CONFLICT,
+                    "分类下存在文章，无法删除"
             );
         }
         if(!(category.getCreatorId().equals(creatorId))) {
