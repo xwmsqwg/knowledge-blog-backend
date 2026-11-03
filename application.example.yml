@@ -18,6 +18,10 @@ mybatis-plus:
     db-config:
       id-type: auto
 
+springdoc:
+  api-docs:
+    version: OPENAPI_3_0
+
 security:
   jwt:
     secret: ${JWT_SECRET}
