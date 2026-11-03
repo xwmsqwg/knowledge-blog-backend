@@ -23,7 +23,7 @@ public class UserController {
 
     @Operation(summary = "获取当前登录用户")
     @GetMapping("/me")
-    public Result getCurrentUser(@RequestAttribute("currentUserId") Integer userId){
+    public Result<UserVO> getCurrentUser(@RequestAttribute("currentUserId") Integer userId){
         UserVO userVO = userService.getCurrUser(userId);
         return Result.success(userVO);
     }

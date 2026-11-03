@@ -24,7 +24,7 @@ public class TagController {
 
     @Operation(summary = "查询所有标签")
     @GetMapping
-    public Result getAllTags(){
+    public Result<List<TagVO>> getAllTags(){
         List<TagVO> tagVOS = tagService.getAllTags();
         return Result.success(tagVOS);
     }

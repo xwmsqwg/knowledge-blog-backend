@@ -3,6 +3,7 @@ package com.xrf.iotbackend.controller;
 import com.xrf.iotbackend.common.api.Result;
 import com.xrf.iotbackend.model.dto.ArticleCreateRequest;
 import com.xrf.iotbackend.model.dto.ArticleUpdateRequest;
+import com.xrf.iotbackend.model.vo.ArticlePageVO;
 import com.xrf.iotbackend.model.vo.ArticleVO;
 import com.xrf.iotbackend.service.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +30,7 @@ public class ArticleController {
     @Operation(summary = "创建文章" , description = "标签不存在时自动创建")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Result createArticle(
+    public Result<ArticleVO> createArticle(
             @Valid @RequestBody ArticleCreateRequest articleCreateRequest,
             @RequestAttribute("currentUserId") Integer authorId
     ){
@@ -39,7 +40,7 @@ public class ArticleController {
 
     @Operation(summary = "分页查询文章")
     @GetMapping
-    public Result pageAll(
+    public Result<ArticlePageVO> pageAll(
             @Parameter(description = "页码，从 1 开始")
             @RequestParam(defaultValue = "1") @Min(1) Integer page,
             @Parameter(description = "每页数量，1-100")
@@ -53,13 +54,13 @@ public class ArticleController {
 
     @Operation(summary = "查询文章详情")
     @GetMapping("/{id}")
-    public Result getArticle(@PathVariable("id") Integer articleId){
+    public Result<ArticleVO> getArticle(@PathVariable("id") Integer articleId){
         return Result.success(articleService.getArticle(articleId));
     }
 
     @Operation(summary = "更新文章", description = "仅文章作者可更新")
     @PutMapping("/{id}")
-    public Result updateArticle(
+    public Result<ArticleVO> updateArticle(
             @PathVariable("id") Integer articleId,
             @Valid @RequestBody ArticleUpdateRequest articleUpdateRequest,
             @RequestAttribute("currentUserId") Integer authorId
@@ -70,7 +71,7 @@ public class ArticleController {
 
     @Operation(summary = "删除文章", description = "仅文章作者可删除")
     @DeleteMapping("/{id}")
-    public Result deleteArticle(
+    public Result<Void> deleteArticle(
             @PathVariable("id") Integer articleId,
             @RequestAttribute("currentUserId") Integer authorId
     ){

@@ -24,14 +24,14 @@ public class AuthController {
     @Operation(summary = "用户注册")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public Result<UserVO> register(@Valid @RequestBody RegisterRequest registerRequest) {
         UserVO userVO = authService.register(registerRequest);
         return Result.success("注册成功", userVO);
     }
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")
-    public Result login(@Valid @RequestBody LoginRequest loginRequest) {
+    public Result<LoginVO> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginVO loginVO = authService.login(loginRequest);
         return Result.success(loginVO);
     }

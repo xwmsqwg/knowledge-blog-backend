@@ -25,7 +25,7 @@ public class CategoryController {
 
     @Operation(summary = "查询全部分类")
     @GetMapping
-    public Result getAllCategories(){
+    public Result<List<CategoryVO>> getAllCategories(){
         List<CategoryVO> categoryVOList = categoryService.getAllCategories();
         return Result.success(categoryVOList);
     }
@@ -33,7 +33,7 @@ public class CategoryController {
     @Operation(summary = "创建分类")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Result createCategory(
+    public Result<CategoryVO> createCategory(
             @Valid @RequestBody CategoryCreateRequest request,
             @RequestAttribute("currentUserId") Integer creatorId
     ) {
@@ -43,7 +43,7 @@ public class CategoryController {
 
     @Operation(summary = "删除分类", description = "仅分类创建者可删除；分类下存在文章时不可删除")
     @DeleteMapping("/{id}")
-    public Result deleteCategory(
+    public Result<Void> deleteCategory(
             @PathVariable("id") Integer categoryId,
             @RequestAttribute("currentUserId") Integer creatorId
     ) {

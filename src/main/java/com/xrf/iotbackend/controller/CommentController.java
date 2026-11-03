@@ -2,6 +2,7 @@ package com.xrf.iotbackend.controller;
 
 import com.xrf.iotbackend.common.api.Result;
 import com.xrf.iotbackend.model.dto.CommentCreateRequest;
+import com.xrf.iotbackend.model.vo.CommentVO;
 import com.xrf.iotbackend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,7 +24,7 @@ public class CommentController {
     @Operation(summary = "发表评论")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Result createComments(
+    public Result<CommentVO> createComments(
             @Valid @RequestBody CommentCreateRequest commentCreateRequest ,
             @RequestAttribute("currentUserId") Integer authorId
     ){
@@ -32,7 +33,7 @@ public class CommentController {
 
     @Operation(summary = "删除评论", description = "评论作者或文章作者可删除")
     @DeleteMapping("/{id}")
-    public Result deleteComment(
+    public Result<Void> deleteComment(
             @PathVariable("id") Integer commentId ,
             @RequestAttribute("currentUserId") Integer currentAuthor
     ){
