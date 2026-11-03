@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class Result<T> {
     @Schema(description = "业务状态码，0 表示成功", example = "0")
     private Integer code;
-    @Schema(description = "提示信息", example = "操作成功")
+    @Schema(description = "提示信息", example = "success")
     private String message;
     @Schema(description = "业务数据；无返回数据时为 null")
     private T data;
-    @Schema(description = "响应时间，Unix 毫秒时间戳", example = "1762142400000")
+    @Schema(description = "响应时间，毫秒时间戳", example = "1762142400000")
     private Long timestamp;
 
     public static Result<Void> success() {
