@@ -56,7 +56,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
                 response.getWriter(),
                 Result.error(ErrorCode.UNAUTHORIZED.getCode(), message)
         );
-
+        log.warn("登录校验失败");
         return false;
     }
 

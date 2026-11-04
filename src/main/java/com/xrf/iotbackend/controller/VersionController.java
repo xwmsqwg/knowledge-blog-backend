@@ -3,6 +3,7 @@ package com.xrf.iotbackend.controller;
 import com.xrf.iotbackend.common.api.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.info.BuildProperties;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Tag(name = "系统信息")
 @RestController
 @RequestMapping("/api/v1/info")
@@ -47,6 +49,7 @@ public class VersionController {
                         "MySQL 8.0+"
                 )
         );
+        log.info("获取系统信息成功");
         return Result.success(info);
     }
 }

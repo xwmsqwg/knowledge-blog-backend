@@ -6,12 +6,14 @@ import com.xrf.iotbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @Tag(name = "用户", description = "当前登录用户信息")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -25,6 +27,7 @@ public class UserController {
     @GetMapping("/me")
     public Result<UserVO> getCurrentUser(@RequestAttribute("currentUserId") Integer userId){
         UserVO userVO = userService.getCurrUser(userId);
+        log.info("查询用户成功，username = {}",userVO.getUsername());
         return Result.success(userVO);
     }
 

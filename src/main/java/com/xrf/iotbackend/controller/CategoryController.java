@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "分类", description = "分类查询、创建与删除")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -27,6 +29,7 @@ public class CategoryController {
     @GetMapping
     public Result<List<CategoryVO>> getAllCategories(){
         List<CategoryVO> categoryVOList = categoryService.getAllCategories();
+        log.info("查询所有分类成功");
         return Result.success(categoryVOList);
     }
 
@@ -38,6 +41,7 @@ public class CategoryController {
             @RequestAttribute("currentUserId") Integer creatorId
     ) {
         CategoryVO categoryVO = categoryService.createCategory(request.getName(), creatorId);
+        log.info("成功创建分类：{},categoryId = {}",categoryVO.getName() , categoryVO.getId());
         return Result.success("分类创建成功", categoryVO);
     }
 
@@ -48,6 +52,7 @@ public class CategoryController {
             @RequestAttribute("currentUserId") Integer creatorId
     ) {
         categoryService.deleteCategory(categoryId , creatorId);
+        log.info("成功删除分类,categoryId = {}" , categoryId);
         return Result.successMessage("分类删除成功");
     }
 }

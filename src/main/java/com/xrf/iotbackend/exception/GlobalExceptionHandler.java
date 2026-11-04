@@ -18,7 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private ResponseEntity<Result> response(ErrorCode errorCode, String message) {
+    private ResponseEntity<Result<?>> response(ErrorCode errorCode, String message) {
         return ResponseEntity
                 .status(errorCode.getStatus())
                 .body(Result.error(errorCode.getCode(), message));
@@ -26,39 +26,49 @@ public class GlobalExceptionHandler {
 
     //处理业务异常
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Result> handleBusinessException(BusinessException exception) {
+    public ResponseEntity<Result<?>> handleBusinessException(BusinessException exception) {
         ErrorCode errorCode = exception.getErrorCode();
+        log.warn("业务异常：code = {} , message = {}" , errorCode.getCode() , exception.getMessage());
         return response(errorCode, exception.getMessage());
     }
 
     //处理@Valid校验失败
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Result> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+    public ResponseEntity<Result<?>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
         FieldError fieldError = exception.getBindingResult().getFieldError();
         String message = fieldError == null ? ErrorCode.VALIDATION_ERROR.getMessage() : fieldError.getDefaultMessage();
+        if(fieldError == null){
+            log.warn("@Valid 校验失败: message={}", message);
+        }
+        else {
+            log.warn("@Valid 校验失败: field={}, message={}", fieldError.getField(), message);
+        }
         return response(ErrorCode.VALIDATION_ERROR, message);
     }
 
     //处理方法参数校验异常
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Result> handleConstraintViolation(ConstraintViolationException exception) {
+    public ResponseEntity<Result<?>> handleConstraintViolation(ConstraintViolationException exception) {
         String message = exception.getConstraintViolations()
                 .stream()
                 .findFirst()
                 .map(violation -> violation.getMessage())
                 .orElse(ErrorCode.VALIDATION_ERROR.getMessage());
+        log.warn("参数校验失败: message={}", message);
         return response(ErrorCode.VALIDATION_ERROR, message);
     }
 
     //处理请求体错误异常
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Result> handleUnreadableMessage() {
+    public ResponseEntity<Result<?>> handleUnreadableMessage() {
+        log.warn("请求体解析失败");
         return response(ErrorCode.VALIDATION_ERROR, "请求 JSON 格式错误");
     }
 
     //请求方法错误异常
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<Result> handleMethodNotSupported(){
+    public ResponseEntity<Result<?>> handleMethodNotSupported(HttpRequestMethodNotSupportedException exception){
+        log.warn("请求方式错误: method={}, supported={}", exception.getMethod(), exception.getSupportedHttpMethods());
         return response(ErrorCode.METHOD_NOT_ALLOWED , "请求方式错误");
     }
 
@@ -67,13 +77,14 @@ public class GlobalExceptionHandler {
             HandlerMethodValidationException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<Result> handleRequestParameterError(Exception exception) {
+    public ResponseEntity<Result<?>> handleRequestParameterError(Exception exception) {
+        log.warn("请求参数错误: type={}" , exception.getClass().getSimpleName());
         return response(ErrorCode.VALIDATION_ERROR, "请求参数错误");
     }
 
     //兜底异常处理
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Result> handleUnknownException(Exception exception) {
+    public ResponseEntity<Result<?>> handleUnknownException(Exception exception) {
         log.error("未处理的服务器异常", exception);
         return response(
                 ErrorCode.INTERNAL_ERROR,
