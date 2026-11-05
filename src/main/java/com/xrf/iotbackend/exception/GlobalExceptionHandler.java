@@ -2,7 +2,6 @@ package com.xrf.iotbackend.exception;
 
 import com.xrf.iotbackend.common.api.ErrorCode;
 import com.xrf.iotbackend.common.api.Result;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -43,18 +42,6 @@ public class GlobalExceptionHandler {
         else {
             log.warn("@Valid 校验失败: field={}, message={}", fieldError.getField(), message);
         }
-        return response(ErrorCode.VALIDATION_ERROR, message);
-    }
-
-    //处理方法参数校验异常
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Result<?>> handleConstraintViolation(ConstraintViolationException exception) {
-        String message = exception.getConstraintViolations()
-                .stream()
-                .findFirst()
-                .map(violation -> violation.getMessage())
-                .orElse(ErrorCode.VALIDATION_ERROR.getMessage());
-        log.warn("参数校验失败: message={}", message);
         return response(ErrorCode.VALIDATION_ERROR, message);
     }
 
