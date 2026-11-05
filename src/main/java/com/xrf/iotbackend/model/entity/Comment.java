@@ -2,6 +2,7 @@ package com.xrf.iotbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class Comment {
     private Integer articleId;
     private Integer authorId;
     private String content;
+    @TableLogic(value = "0",delval = "1")
+    private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 

@@ -79,7 +79,7 @@
         u.username as author_username ,
         c.id as category_id ,
         c.name as category_name ,
-        (select count(*) from comments where comments.article_id = a.id) as article_comment_count
+        (select count(*) from comments where comments.article_id = a.id and comments.status = 0) as article_comment_count
         from articles a
         join users u on u.id = a.author_id
         join categories c on a.category_id = c.id
@@ -128,7 +128,7 @@
         from articles a
         join users u on u.id = a.author_id
         join categories c on a.category_id = c.id
-        left join comments com on a.id = com.article_id
+        left join comments com on a.id = com.article_id and com.status = 0
         left join users com_u on com_u.id = com.author_id
         <where>
             <if test="articleId != null">
