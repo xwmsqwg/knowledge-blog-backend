@@ -10,7 +10,7 @@ spring:
       maximum-pool-size: 10
 
 mybatis-plus:
-  mapper-locations: classpath*:/com/xrf/IOTBackend/mapper/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.xrf.iotbackend.model.entity
   configuration:
     map-underscore-to-camel-case: true

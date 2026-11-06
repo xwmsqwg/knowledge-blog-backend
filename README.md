@@ -82,8 +82,8 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 |   |   |   |-- utils/                 # 工具类（含JWT 签发与解析）  
 |   |   |   `-- IotBackendApplication.java  
 |   |   `-- resources/  
-|   |       `-- com/xrf/IOTBackend/mapper/  
-|   |                                  # XML Mapper；路径大小写与配置一致  
+|   |       `-- mapper/                # XML Mapper
+|   |                                    
 |   `-- test/java/com/xrf/iotbackend/  # 自动化测试  
 |-- .mvn/wrapper/                      # Maven Wrapper 配置  
 |-- mvnw  
