@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CategoryCreateRequest {
 
-    @Schema(description = "分类名称", example = "后端")
+    @Schema(description = "分类名称，必填，1-50 个字符；名称唯一（忽略大小写）", example = "后端")
     @NotBlank(message = "分类名称不能为空")
     @Size(min = 1 , max = 50, message = "分类名称不能为空，且长度不能超过50个字符")
     private String name;

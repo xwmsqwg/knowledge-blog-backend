@@ -2,15 +2,18 @@ package com.xrf.iotbackend.controller;
 
 import com.xrf.iotbackend.common.api.Result;
 import com.xrf.iotbackend.model.dto.CommentCreateRequest;
+import com.xrf.iotbackend.model.vo.CommentVO;
 import com.xrf.iotbackend.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "评论", description = "评论发表与删除")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -23,20 +26,23 @@ public class CommentController {
     @Operation(summary = "发表评论")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Result createComments(
+    public Result<CommentVO> createComments(
             @Valid @RequestBody CommentCreateRequest commentCreateRequest ,
             @RequestAttribute("currentUserId") Integer authorId
     ){
-        return Result.success("评论发表成功", commentService.createComment(commentCreateRequest , authorId));
+        CommentVO commentVO = commentService.createComment(commentCreateRequest , authorId);
+        log.info("评论创建成功，commentId = {} ，articleId = {} , commentAuthId = {}" , commentVO.getId() , commentVO.getArticleId() , commentVO.getAuthor());
+        return Result.success("评论发表成功", commentVO);
     }
 
     @Operation(summary = "删除评论", description = "评论作者或文章作者可删除")
     @DeleteMapping("/{id}")
-    public Result deleteComment(
+    public Result<Void> deleteComment(
             @PathVariable("id") Integer commentId ,
             @RequestAttribute("currentUserId") Integer currentAuthor
     ){
         commentService.deleteComment(commentId , currentAuthor);
+        log.info("评论删除成功，commentId = {}" , commentId);
         return Result.successMessage("评论删除成功");
     }
 

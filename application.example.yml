@@ -10,7 +10,7 @@ spring:
       maximum-pool-size: 10
 
 mybatis-plus:
-  mapper-locations: classpath*:/com/xrf/IOTBackend/mapper/**/*.xml
+  mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.xrf.iotbackend.model.entity
   configuration:
     map-underscore-to-camel-case: true
@@ -18,7 +18,24 @@ mybatis-plus:
     db-config:
       id-type: auto
 
+springdoc:
+  api-docs:
+    version: OPENAPI_3_0
+
 security:
   jwt:
     secret: ${JWT_SECRET}
     expiration-ms: 604800000
+
+logging:
+  file:
+    name: logs/iotbackend.log
+  level:
+    root: INFO
+    com.xrf.iotbackend: INFO
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/archive/iotbackend.%d{yyyy-MM-dd}.%i.log.gz
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB

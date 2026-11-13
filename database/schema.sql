@@ -104,6 +104,7 @@ create table comments
     author_id   int                                not null comment '评论作者用户 id',
     content     text                               not null comment '评论内容',
     create_time datetime default current_timestamp not null comment '创建时间',
+    status      tinyint  default 0                 not null comment '0正常，1已删除',
     key         idx_comments_article_create (article_id, create_time),
     key         idx_comments_author_id (author_id),
     constraint fk_comments_article

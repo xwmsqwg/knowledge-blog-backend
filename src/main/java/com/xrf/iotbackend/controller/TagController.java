@@ -6,6 +6,7 @@ import com.xrf.iotbackend.service.TagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "标签", description = "标签查询")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
@@ -24,8 +26,9 @@ public class TagController {
 
     @Operation(summary = "查询所有标签")
     @GetMapping
-    public Result getAllTags(){
+    public Result<List<TagVO>> getAllTags(){
         List<TagVO> tagVOS = tagService.getAllTags();
+        log.info("查询所有标签成功");
         return Result.success(tagVOS);
     }
 

@@ -9,10 +9,12 @@ import com.xrf.iotbackend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "认证", description = "用户注册与登录")
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -24,15 +26,17 @@ public class AuthController {
     @Operation(summary = "用户注册")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public Result<UserVO> register(@Valid @RequestBody RegisterRequest registerRequest) {
         UserVO userVO = authService.register(registerRequest);
+        log.info("注册成功，id = {}" , userVO.getId());
         return Result.success("注册成功", userVO);
     }
 
     @Operation(summary = "用户登录")
     @PostMapping("/login")
-    public Result login(@Valid @RequestBody LoginRequest loginRequest) {
+    public Result<LoginVO> login(@Valid @RequestBody LoginRequest loginRequest) {
         LoginVO loginVO = authService.login(loginRequest);
+        log.info("登录成功，id = {}" , loginVO.getUser().getId());
         return Result.success(loginVO);
     }
 }

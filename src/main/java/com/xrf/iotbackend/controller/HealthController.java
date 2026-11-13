@@ -20,7 +20,7 @@ public class HealthController {
 
     @Operation(summary = "健康检查")
     @GetMapping("/health")
-    public Result health() {
+    public Result<Map<String, String>> health() {
         boolean isUp = applicationAvailability.getReadinessState() == ReadinessState.ACCEPTING_TRAFFIC;
         return Result.success(isUp ? "service is up" : "service is down", Map.of("status", isUp ? "UP" : "DOWN"));
     }

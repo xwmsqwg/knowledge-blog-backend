@@ -82,9 +82,8 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 |   |   |   |-- utils/                 # 工具类（含JWT 签发与解析）  
 |   |   |   `-- IotBackendApplication.java  
 |   |   `-- resources/  
-|   |       |-- application.yaml       # 数据源、MyBatis-Plus、JWT 配置  
-|   |       `-- com/xrf/IOTBackend/mapper/  
-|   |                                  # XML Mapper；路径大小写与配置一致  
+|   |       `-- mapper/                # XML Mapper
+|   |                                    
 |   `-- test/java/com/xrf/iotbackend/  # 自动化测试  
 |-- .mvn/wrapper/                      # Maven Wrapper 配置  
 |-- mvnw  
@@ -92,6 +91,8 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 |-- pom.xml  
 `-- README.md  
 ```  
+
+`application.example.yml` 位于仓库根目录，启动命令会显式加载它。本地可以创建 `src/main/resources/application.yaml` 进行个人配置。
 
 ## 3.环境要求
 - JDK 21
