@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -67,6 +68,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Result<?>> handleRequestParameterError(Exception exception) {
         log.warn("请求参数错误: type={}" , exception.getClass().getSimpleName());
         return response(ErrorCode.VALIDATION_ERROR, "请求参数错误");
+    }
+
+    // 处理请求路径异常
+    @ExceptionHandler({NoResourceFoundException.class})
+    public ResponseEntity<Result<?>> handlerNotFound(Exception exception){
+        log.warn("资源不存在");
+        return response(ErrorCode.NOT_FOUND , "请求资源不存在");
     }
 
     //兜底异常处理
