@@ -5,35 +5,43 @@
 ## 1.技术栈清单与版本
 
 ### 1.语言与框架
+
 - Java 21：项目编译与运行使用的 JDK 版本。
 - Spring Boot 3.5.16：应用配置、启动与依赖管理。
 - Spring MVC：提供 REST API、拦截器和全局异常处理。
 - Maven 3.10.0
 
 ### 2.数据库
+
 - MySQL 8.0+：保存用户、文章、分类、标签和评论数据。
 - MyBatis-Plus 3.5.17：基础 CRUD 与自定义 XML Mapper。
 - MySQL Connector/J、HikariCP：数据库驱动和连接池，版本由 Spring Boot 管理。
 
 ### 3.认证、校验与测试
+
 - JJWT 0.12.6：使用 HS256 签发、校验 JWT，有效期为 7 天。
 - Spring Security Crypto：使用 BCrypt 保存密码哈希。
 - Jakarta Validation：校验请求体和请求参数。
 - Lombok：简化实体、DTO、VO 的代码。
 - JUnit、Spring Boot Test、MockMvc：自动化测试支持。
 
-- 其他依赖版本由 Spring Boot 3.5.16 统一管理，具体声明见 `pom.xml`。
+其他依赖版本由 Spring Boot 3.5.16 统一管理，具体声明见 [pom.xml](pom.xml)。
 
 ## 2.项目架构
 
 ### 1.请求流转图
+
 ```text  
 请求
   |
   v
+中间件：IPRequestLimit（仅 /api/**）
+（按 IP 固定窗口计数，超限返回 429）
+  |
+  v
 中间件：LoginCheckInterceptor
 （校验 Bearer JWT 并写入当前用户 ID
-  注册、登录、健康检查路径免登录）
+  注册、登录、健康检查、Swagger 免登录）
   |
   v
 Controller + Jakarta Validation
@@ -62,6 +70,7 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 ```text  
 .  
 |-- application.example.yml            # 环境变量与应用配置模板  
+|-- AI_USAGE.md                        # AI 辅助开发说明
 |-- database/  
 |   |-- schema.sql                     # 建库建表、索引与外键  
 |   `-- ER图.png                       # 数据库关系图  
@@ -72,7 +81,7 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 |   |   |   |-- config/                # MVC、密码编码器和 JWT 配置  
 |   |   |   |-- controller/            # HTTP 接口、参数校验与响应  
 |   |   |   |-- exception/             # 业务异常与全局异常处理  
-|   |   |   |-- middleware/            # JWT 登录校验拦截器  
+|   |   |   |-- middleware/            # IP 限流和 JWT 登录校验拦截器
 |   |   |   |-- model/  
 |   |   |   |   |-- dto/               # 请求参数对象  
 |   |   |   |   |-- entity/            # 数据库实体  
@@ -90,13 +99,13 @@ DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
 |-- mvnw.cmd  
 |-- pom.xml  
 `-- README.md  
-```  
-
-`application.example.yml` 位于仓库根目录，启动命令会显式加载它。本地可以创建 `src/main/resources/application.yaml` 进行个人配置。
+```
 
 ## 3.环境要求
+
 - JDK 21
 - MySQL 8.0+
+
 ## 4.详细启动步骤
 
 ### 1. 克隆仓库
@@ -115,7 +124,7 @@ java -version
 $env:DB_USERNAME = "<数据库用户名>"  
 $env:DB_PASSWORD = "<数据库密码>"  
   
-# 生成随机密钥并仅保存到当前进程环境变量  
+# 首次运行生成 JWT 密钥，保存到当前 PowerShell 会话的环境变量
 $jwtKeyBytes = New-Object byte[] 32  
 $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()  
 $rng.GetBytes($jwtKeyBytes)  
@@ -132,14 +141,13 @@ mysql --default-character-set=utf8mb4 -u "$env:DB_USERNAME" -p
 ```  
 
 - 在客户端内执行下列 SQL，将路径替换为当前克隆目录下 `database/schema.sql` 的实际绝对路径：
-- 脚本会创建 `knowledge_blog` 数据库和六张表
+- 脚本会创建 `knowledge_blog` 数据库和六张表。
+
 ```sql  
 SOURCE C:/path/to/knowledge-blog-backend/database/schema.sql;  
 USE knowledge_blog;  
 SHOW TABLES;  
 ```  
-
-
 
 ### 4. 编译并运行
 
@@ -147,10 +155,10 @@ SHOW TABLES;
 
 ```powershell  
 .\mvnw.cmd -q -DskipTests compile  
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.config.additional-location=file:./application.example.yml"  
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.config.location=file:./application.example.yml"
 ```  
 
-- 启动命令显式加载根目录的配置模板，数据库账号和 JWT 密钥从环境变量读取。首次运行 Wrapper 会下载 Maven 和依赖。服务默认地址为 `http://localhost:8080`。
+启动命令指定根目录的配置模板，数据库账号和 JWT 密钥从环境变量读取。此命令不加载本地个人 `application.yaml`。首次运行 Wrapper 会下载 Maven 和依赖。服务默认地址为 `http://localhost:8080`。
 
 ## 5.环境变量配置说明
 
