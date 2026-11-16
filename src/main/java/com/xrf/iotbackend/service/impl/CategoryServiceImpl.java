@@ -73,10 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
                     "分类不存在"
             );
         }
-        long articleCount = articleRepository.selectCount(
-                Wrappers.<Article>lambdaQuery()
-                        .eq(Article::getCategoryId , categoryId)
-        );
+        long articleCount = articleRepository.countAllByCategoryId(categoryId);
         if(articleCount > 0){
             throw new BusinessException(
                     ErrorCode.CONFLICT,
