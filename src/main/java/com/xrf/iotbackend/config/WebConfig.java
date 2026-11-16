@@ -1,5 +1,6 @@
 package com.xrf.iotbackend.config;
 
+import com.xrf.iotbackend.middleware.IPRequestLimit;
 import com.xrf.iotbackend.middleware.LoginCheckInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +12,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private LoginCheckInterceptor loginCheckInterceptor;
+    @Autowired
+    private IPRequestLimit ipRequestLimit;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(ipRequestLimit)
+                .addPathPatterns("/api/**");
         registry.addInterceptor(loginCheckInterceptor)
                 .addPathPatterns("/**").
                 excludePathPatterns(
