@@ -1,0 +1,39 @@
+name: knowledge-blog
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: knowledge-blog-mysql
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?请设置DB_PASSWORD}
+      MYSQL_DATABASE: knowledge_blog
+    ports:
+      - "3306:3306"
+    volumes:
+      - "/usr/local/app/mysql/conf:/etc/mysql/conf.d"
+      - "/usr/local/app/mysql/data:/var/lib/mysql"
+      - "/usr/local/app/mysql/init:/docker-entrypoint-initdb.d"
+    networks:
+      - knowledge-blog-net
+  knowledge_blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: knowledge-blog-server:latest
+    container_name: knowledge-blog-server
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_CONFIG_LOCATION: classpath:/application.example.yaml
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/knowledge_blog?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD:?请设置DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?请设置JWT_SECRET}
+    networks:
+      - knowledge-blog-net
+    depends_on:
+      - mysql
+networks:
+  knowledge-blog-net:
+    name: xrf
