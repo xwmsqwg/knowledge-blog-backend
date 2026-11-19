@@ -22,7 +22,7 @@ public class CommentCreateRequest {
 
     @Schema(description = "评论正文，必填，不能为空", example = "这是一条评论")
     @NotBlank(message = "正文不能为空")
-    @Size(min = 1 , message = "正文不能为空")
+    @Size(min = 1 , max = 5000 ,message = "正文不能为空")
     private String content;
 
 }

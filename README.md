@@ -1,164 +1,128 @@
 # 知识库 / 博客协作平台后端
 
-*简介*：**支持用户认证、文章管理、分类标签和评论互动的后端平台。  **
+简介：支持用户认证、文章管理、分类标签、评论互动和系统健康检查的后端平台。
 
-## 1.技术栈清单与版本
+## 1. 技术栈
 
-### 1.语言与框架
+### 1. 语言与框架
+
 - Java 21：项目编译与运行使用的 JDK 版本。
 - Spring Boot 3.5.16：应用配置、启动与依赖管理。
 - Spring MVC：提供 REST API、拦截器和全局异常处理。
 - Maven 3.10.0
 
-### 2.数据库
+### 2. 数据库
+
 - MySQL 8.0+：保存用户、文章、分类、标签和评论数据。
 - MyBatis-Plus 3.5.17：基础 CRUD 与自定义 XML Mapper。
 - MySQL Connector/J、HikariCP：数据库驱动和连接池，版本由 Spring Boot 管理。
 
-### 3.认证、校验与测试
+### 3. 认证、校验与测试
+
 - JJWT 0.12.6：使用 HS256 签发、校验 JWT，有效期为 7 天。
 - Spring Security Crypto：使用 BCrypt 保存密码哈希。
 - Jakarta Validation：校验请求体和请求参数。
 - Lombok：简化实体、DTO、VO 的代码。
 - JUnit、Spring Boot Test、MockMvc：自动化测试支持。
 
-- 其他依赖版本由 Spring Boot 3.5.16 统一管理，具体声明见 `pom.xml`。
+其他依赖版本由 Spring Boot 3.5.16 统一管理，具体声明见 [pom.xml](pom.xml)。
 
-## 2.项目架构
+## 2. 项目架构
 
-### 1.请求流转图
-```text  
-请求
-  |
-  v
-中间件：LoginCheckInterceptor
-（校验 Bearer JWT 并写入当前用户 ID
-  注册、登录、健康检查路径免登录）
-  |
-  v
-Controller + Jakarta Validation
-（接收请求、校验参数）
-  |
-  v
-Service
-（执行业务逻辑、权限判断和事务管理）
-  |
-  v
-DAO：Repository / XML Mapper
-（使用 MyBatis-Plus 和自定义 SQL）
-  |
-  v
-DB：MySQL（HikariCP 连接池）
+![项目架构图](docs/项目架构图.png)
 
-响应返回方向：
-DB -> DAO -> Service -> Controller -> VO -> Result -> JSON -> 客户端
+## 3. 环境要求
 
-业务异常 / 参数异常 -> GlobalExceptionHandler -> 统一错误响应
-```  
+- Windows 开发机：JDK 21、Git
+- Linux 服务器：Docker Engine、Docker Compose、OpenSSL
+- MySQL 8.0+ 由 Compose 容器提供。
 
+## 4. Docker Compose 部署
 
-### 2.目录
+### 1. 克隆仓库并切换到项目目录(win)
 
-```text  
-.  
-|-- application.example.yml            # 环境变量与应用配置模板  
-|-- database/  
-|   |-- schema.sql                     # 建库建表、索引与外键  
-|   `-- ER图.png                       # 数据库关系图  
-|-- src/  
-|   |-- main/  
-|   |   |-- java/com/xrf/iotbackend/  
-|   |   |   |-- common/api/            # 统一响应 Result、错误码 ErrorCode
-|   |   |   |-- config/                # MVC、密码编码器和 JWT 配置  
-|   |   |   |-- controller/            # HTTP 接口、参数校验与响应  
-|   |   |   |-- exception/             # 业务异常与全局异常处理  
-|   |   |   |-- middleware/            # JWT 登录校验拦截器  
-|   |   |   |-- model/  
-|   |   |   |   |-- dto/               # 请求参数对象  
-|   |   |   |   |-- entity/            # 数据库实体  
-|   |   |   |   `-- vo/                # 响应数据对象  
-|   |   |   |-- repository/            # 数据访问接口  
-|   |   |   |-- service/               # 服务接口及 impl/ 业务实现  
-|   |   |   |-- utils/                 # 工具类（含JWT 签发与解析）  
-|   |   |   `-- IotBackendApplication.java  
-|   |   `-- resources/  
-|   |       `-- mapper/                # XML Mapper
-|   |                                    
-|   `-- test/java/com/xrf/iotbackend/  # 自动化测试  
-|-- .mvn/wrapper/                      # Maven Wrapper 配置  
-|-- mvnw  
-|-- mvnw.cmd  
-|-- pom.xml  
-`-- README.md  
-```  
+```bash
+git clone https://github.com/xwmsqwg/knowledge-blog-backend.git
+cd knowledge-blog-backend
+```
 
-`application.example.yml` 位于仓库根目录，启动命令会显式加载它。本地可以创建 `src/main/resources/application.yaml` 进行个人配置。
+### 2. 打包应用
 
-## 3.环境要求
-- JDK 21
-- MySQL 8.0+
-## 4.详细启动步骤
+```powershell
+.\mvnw.cmd -q -DskipTests package
+Copy-Item .\target\backend-0.0.1-SNAPSHOT.jar .\DockerCompose\knowledge_blog.jar
+```
 
-### 1. 克隆仓库
+Dockerfile 使用 Java 21 JRE 镜像运行这个 JAR；Windows 上的 JDK 21 仅用于 Maven 打包。
 
-```powershell  
-git clone https://github.com/xwmsqwg/knowledge-blog-backend.git  
-Set-Location knowledge-blog-backend  
-java -version  
-```  
+### 3. 使用 Xftp 上传部署文件
 
-### 2. 配置环境变量
+先在 Linux 服务器创建目录：
 
-- 在准备启动项目的同一个 PowerShell 窗口中设置：
+```bash
+sudo mkdir -p /usr/local/app/knowledge-blog
+sudo mkdir -p /usr/local/app/mysql/{conf,data,init}
+```
 
-```powershell  
-$env:DB_USERNAME = "<数据库用户名>"  
-$env:DB_PASSWORD = "<数据库密码>"  
-  
-# 生成随机密钥并仅保存到当前进程环境变量  
-$jwtKeyBytes = New-Object byte[] 32  
-$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()  
-$rng.GetBytes($jwtKeyBytes)  
-$env:JWT_SECRET = [Convert]::ToBase64String($jwtKeyBytes)  
-$rng.Dispose()  
-```  
+1. 使用 Xftp 将 `DockerCompose` 目录中的`Dockerfile`、`docker-compose.yml` 、`knowledge_blog.jar`上传到 `/usr/local/app/knowledge-blog/`。
+2. 将仓库的 `database/schema.sql` 上传到 `/usr/local/app/mysql/init/schema.sql`。
 
-### 3. 初始化数据库
+### 3. 配置 `.env`
 
-- 先确认 MySQL 已启动，再使用有建库、建表权限的账号进入 MySQL 客户端：
+1. 生成密码和密钥(默认为随机生成，也可以自定义)
+```bash
+openssl rand -hex 24
+openssl rand -hex 32
+```
 
-```powershell  
-mysql --default-character-set=utf8mb4 -u "$env:DB_USERNAME" -p  
-```  
+2. 切换目录，写入环境变量
+```bash
+cd /usr/local/app/knowledge-blog
+nano .env
+```
 
-- 在客户端内执行下列 SQL，将路径替换为当前克隆目录下 `database/schema.sql` 的实际绝对路径：
-- 脚本会创建 `knowledge_blog` 数据库和六张表
-```sql  
-SOURCE C:/path/to/knowledge-blog-backend/database/schema.sql;  
-USE knowledge_blog;  
-SHOW TABLES;  
-```  
+3. 在.env设置密钥与密码
+- *建议*：把第 1 步第一条命令的输出填到 DB_PASSWORD= 后，第二条输出填到 JWT_SECRET= 后
+```bash
+DB_PASSWORD=密码
+JWT_SECRET=密钥
+```
+
+在 Nano 里按 `Ctrl+O` 保存，按 `Enter` 确认文件名，再按 `Ctrl+X` 退出。
+
+- `DB_PASSWORD` 同时用于 MySQL 和应用连接数据库。已有数据库则沿用原密码；更换 `.env` 中的值不会自动修改已有 MySQL 数据目录中的密码。
+- 配置模板见 [application.example.yaml](src/main/resources/application.example.yaml)。Compose 通过 `SPRING_CONFIG_LOCATION` 显式加载 JAR 中的模板，并用 `SPRING_DATASOURCE_URL` 覆盖数据库地址；`mysql:3306` 指向同一 Compose 网络中的 MySQL 服务。
+
+### 4. 启动
+
+```bash
+cd /usr/local/app/knowledge-blog
+docker compose up --build -d
+docker compose ps
+```
+
+应用和 MySQL 容器应处于 `Up` 状态。
+复用原部署机器时，先确认旧容器没有占用 3306 和 8080 端口，保留数据库挂载目录。
+
+### 5. 验证
+
+```bash
+docker logs knowledge-blog-mysql --tail=50
+docker logs knowledge-blog-server --tail=50
+curl -i http://localhost:8080/health
+```
+
+应看到 MySQL 的 `ready for connections`、应用的 `Started IotBackendApplication`，健康检查返回 `200` 且状态为 `UP`。
+
+### 6. 停止
+
+```bash
+docker compose down
+```
 
 
 
-### 4. 编译并运行
+## 5. API 文档
 
-- 在项目根目录执行：
-
-```powershell  
-.\mvnw.cmd -q -DskipTests compile  
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.config.additional-location=file:./application.example.yml"  
-```  
-
-- 启动命令显式加载根目录的配置模板，数据库账号和 JWT 密钥从环境变量读取。首次运行 Wrapper 会下载 Maven 和依赖。服务默认地址为 `http://localhost:8080`。
-
-## 5.环境变量配置说明
-
-- 配置模板：[application.example.yml](application.example.yml)
-- `DB_USERNAME`：MySQL 用户名。初始化数据库时所用账号需要有建库、建表权限。
-- `DB_PASSWORD`：MySQL 密码。
-- `JWT_SECRET`  ：HS256 签名密钥，UTF-8 编码后至少 32 字节。启动步骤中的命令会生成随机密钥。  
-
-## 6. API 文档
-
-- Swagger UI：<http://localhost:8080/swagger-ui.html>
+- Swagger UI：`http://<Linux服务器IP>:8080/swagger-ui.html`
+接口路径、请求参数和响应说明见 Swagger 自动生成的文档。

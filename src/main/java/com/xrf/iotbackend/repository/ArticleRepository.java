@@ -6,6 +6,7 @@ import com.xrf.iotbackend.model.vo.ArticleListVO;
 import com.xrf.iotbackend.model.vo.ArticleVO;
 import com.xrf.iotbackend.model.vo.AuthorVO;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -28,5 +29,8 @@ public interface ArticleRepository extends BaseMapper<Article> {
             @Param("content") String content,
             @Param("categoryId") Integer categoryId
     );
+
+    @Select("select count(*) from articles where category_id = #{categoryId}")
+    long countAllByCategoryId(@Param("categoryId") Integer categoryId);
 
 }

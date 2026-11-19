@@ -30,6 +30,8 @@ public class ArticleServiceImpl implements ArticleService {
     private TagRepository tagRepository;
     @Autowired
     private ArticleTagRepository articleTagRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -162,6 +164,12 @@ public class ArticleServiceImpl implements ArticleService {
                     "越权操作!"
             );
         }
+        commentRepository.delete(
+                Wrappers.<Comment>lambdaQuery().eq(Comment::getArticleId , articleId)
+        );
+        articleTagRepository.delete(
+                Wrappers.<ArticleTag>lambdaQuery().eq(ArticleTag::getArticleId , articleId)
+        );
         articleRepository.deleteById(articleId);
     }
 

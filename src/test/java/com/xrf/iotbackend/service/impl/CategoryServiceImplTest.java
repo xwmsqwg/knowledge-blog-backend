@@ -79,7 +79,7 @@ class CategoryServiceImplTest {
         category.setCreatorId(7);
 
         when(categoryRepository.selectById(3)).thenReturn(category);
-        when(articleRepository.selectCount(any())).thenReturn(1L);
+        when(articleRepository.countAllByCategoryId(3)).thenReturn(1L);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> categoryService.deleteCategory(3, 7));
 

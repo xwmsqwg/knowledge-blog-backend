@@ -2,6 +2,7 @@ package com.xrf.iotbackend.controller;
 
 import com.xrf.iotbackend.common.api.Result;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @Slf4j
 @Tag(name = "系统信息")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/v1/info")
 public class VersionController {

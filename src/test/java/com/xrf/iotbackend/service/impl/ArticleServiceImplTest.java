@@ -36,6 +36,8 @@ public class ArticleServiceImplTest {
     private TagRepository tagRepository;
     @Mock
     private ArticleTagRepository articleTagRepository;
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private ArticleServiceImpl articleService;
@@ -163,6 +165,8 @@ public class ArticleServiceImplTest {
 
         assertEquals(ErrorCode.NOT_FOUND, exception.getErrorCode());
         verify(articleRepository, never()).deleteById(anyInt());
+        // 检查方法没有被调用
+        verifyNoInteractions(commentRepository, articleTagRepository);
     }
 
     // 测试非作者不能删除文章
@@ -178,6 +182,7 @@ public class ArticleServiceImplTest {
 
         assertEquals(ErrorCode.FORBIDDEN, exception.getErrorCode());
         verify(articleRepository, never()).deleteById(anyInt());
+        verifyNoInteractions(commentRepository, articleTagRepository);
     }
 
     // 测试作者成功删除文章
@@ -191,6 +196,8 @@ public class ArticleServiceImplTest {
 
         articleService.deleteArticle(7, 9);
 
+        verify(commentRepository).delete(any());
+        verify(articleTagRepository).delete(any());
         verify(articleRepository).deleteById(7);
     }
 
