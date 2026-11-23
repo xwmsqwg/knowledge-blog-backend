@@ -23,13 +23,44 @@
 - Spring Security Crypto：使用 BCrypt 保存密码哈希。
 - Jakarta Validation：校验请求体和请求参数。
 - Lombok：简化实体、DTO、VO 的代码。
-- JUnit、Spring Boot Test、MockMvc：自动化测试支持。
+- JUnit、Spring Boot Test、Mockito：自动化测试支持。
 
 其他依赖版本由 Spring Boot 3.5.16 统一管理，具体声明见 [pom.xml](pom.xml)。
 
 ## 2. 项目架构
 
 ![项目架构图](docs/项目架构图.png)
+
+### 项目结构与职责
+
+```text
+IOTBackend/
+├── src/main/
+│   ├── java/com/xrf/iotbackend/
+│   │   ├── IotBackendApplication.java  # Spring Boot 启动入口
+│   │   ├── common/api/                # 统一响应结构与错误码
+│   │   ├── config/                    # JWT 配置、密码编码器、Swagger 和拦截器注册
+│   │   ├── controller/                # 接收 HTTP 请求、校验参数、返回统一响应
+│   │   ├── service/                   # 业务接口
+│   │   │   └── impl/                  # 业务实现、权限判断及事务管理
+│   │   ├── repository/                # MyBatis-Plus 数据访问接口（DAO）
+│   │   ├── model/
+│   │   │   ├── dto/                   # 接收请求参数的数据对象
+│   │   │   ├── entity/                # 对应数据库表的实体
+│   │   │   └── vo/                    # 返回给前端的数据对象
+│   │   ├── middleware/                # JWT 身份校验、基于 IP 的请求限流
+│   │   ├── exception/                 # 业务异常与全局异常处理
+│   │   └── utils/                     # JWT 签发与解析工具
+│   └── resources/
+│       ├── mapper/                    # 自定义 SQL 与查询结果映射
+│       └── application.example.yaml   # 数据源、JWT、日志等配置模板
+├── src/test/java/                     # 自动化测试
+├── database/                          # 建表 SQL 与 ER 图
+├── DockerCompose/                     # Dockerfile 与 Compose 部署配置
+├── docs/                              # 项目架构图
+├── pom.xml                            # Maven 依赖、构建与覆盖率检查配置
+└── AI_USAGE.md                        # AI 使用说明
+```
 
 ## 3. 环境要求
 
@@ -67,7 +98,7 @@ sudo mkdir -p /usr/local/app/mysql/{conf,data,init}
 1. 使用 Xftp 将 `DockerCompose` 目录中的`Dockerfile`、`docker-compose.yml` 、`knowledge_blog.jar`上传到 `/usr/local/app/knowledge-blog/`。
 2. 将仓库的 `database/schema.sql` 上传到 `/usr/local/app/mysql/init/schema.sql`。
 
-### 3. 配置 `.env`
+### 4. 配置 `.env`
 
 1. 生成密码和密钥(默认为随机生成，也可以自定义)
 ```bash
@@ -93,7 +124,7 @@ JWT_SECRET=密钥
 - `DB_PASSWORD` 同时用于 MySQL 和应用连接数据库。已有数据库则沿用原密码；更换 `.env` 中的值不会自动修改已有 MySQL 数据目录中的密码。
 - 配置模板见 [application.example.yaml](src/main/resources/application.example.yaml)。Compose 通过 `SPRING_CONFIG_LOCATION` 显式加载 JAR 中的模板，并用 `SPRING_DATASOURCE_URL` 覆盖数据库地址；`mysql:3306` 指向同一 Compose 网络中的 MySQL 服务。
 
-### 4. 启动
+### 5. 启动
 
 ```bash
 cd /usr/local/app/knowledge-blog
@@ -104,7 +135,7 @@ docker compose ps
 应用和 MySQL 容器应处于 `Up` 状态。
 复用原部署机器时，先确认旧容器没有占用 3306 和 8080 端口，保留数据库挂载目录。
 
-### 5. 验证
+### 6. 验证
 
 ```bash
 docker logs knowledge-blog-mysql --tail=50
@@ -114,7 +145,7 @@ curl -i http://localhost:8080/health
 
 应看到 MySQL 的 `ready for connections`、应用的 `Started IotBackendApplication`，健康检查返回 `200` 且状态为 `UP`。
 
-### 6. 停止
+### 7. 停止
 
 ```bash
 docker compose down
@@ -126,3 +157,15 @@ docker compose down
 
 - Swagger UI：`http://<Linux服务器IP>:8080/swagger-ui.html`
 接口路径、请求参数和响应说明见 Swagger 自动生成的文档。
+
+## 6. 测试与覆盖率
+
+在项目根目录执行：
+
+```powershell
+.\mvnw.cmd verify
+```
+
+该命令运行自动化测试、生成 JaCoCo 覆盖率报告，并检查项目整体行覆盖率是否达到 40%；测试失败或覆盖率低于门槛时，构建失败。
+
+构建完成后，用浏览器打开 `target/site/jacoco/index.html` 查看覆盖率报告。
