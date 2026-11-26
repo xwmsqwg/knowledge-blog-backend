@@ -2,7 +2,6 @@ package com.xrf.iotbackend.exception;
 
 import com.xrf.iotbackend.common.api.ErrorCode;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class BusinessException extends RuntimeException{

@@ -9,11 +9,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+/**
+ * 按 IP 计数的固定窗口限流：每个 IP 的首次请求开启一个 60 秒窗口，窗口内最多放行 100 次。
+ *     每个 IP 独立计数，首次请求开启 60 秒窗口。
+ *     窗口内前 100 次放行，第 101 次起返回 429。
+ *     满 60 秒后重新开始，新窗口的第一次请求计为 1。
+ */
 
-// TODO 按 IP 计数的固定窗口限流：每个 IP 的首次请求开启一个 60 秒窗口，窗口内最多放行 100 次。
-    //  每个 IP 独立计数，首次请求开启 60 秒窗口。
-    //  窗口内前 100 次放行，第 101 次起返回 429。
-    //  满 60 秒后重新开始，新窗口的第一次请求计为 1。
+
 
 @Component
 public class IPRequestLimit implements HandlerInterceptor {
@@ -30,7 +33,6 @@ public class IPRequestLimit implements HandlerInterceptor {
     private record Window(long startedAtMillis, int requestCount) {
     }
 
-    // 测试便利
     long currentTimeMillis() {
         return System.currentTimeMillis();
     }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
+// 将 application 中 security.jwt 前缀下的配置绑定到本类字段
 @ConfigurationProperties(prefix = "security.jwt")
 public class JwtProperties {
 
