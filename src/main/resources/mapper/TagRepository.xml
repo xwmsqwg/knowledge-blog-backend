@@ -5,9 +5,9 @@
 
 <mapper namespace="com.xrf.iotbackend.repository.TagRepository">
     <select id="selectAllTags" resultType="com.xrf.iotbackend.model.vo.TagVO">
-        select t.id, t.name, count(a.tag_id) article_count
+        select t.id, t.name, count(at.article_id) article_count
         from tags t
-                 left join article_tags a on a.tag_id = t.id
+                 left join article_tags at on at.tag_id = t.id
         group by t.name, t.id
         order by t.id asc
     </select>
